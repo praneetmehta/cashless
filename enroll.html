@@ -4,7 +4,6 @@
     <title>Upload</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,200" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -30,8 +29,8 @@
 </nav>
 <h1 style="text-align: center"> Scan Your ID Card </h1>
 <form action="http://localhost:5000/enroll" method="post" id="scan">
-	<input name = "idnumber" id="idnumber" autofocus autocomplete="off" />
-	<button type="submit">Proceed</button>
+	<input name = "idnumber" id="idnumber" autofocus="on" autocomplete="off" />
+	<button type="submit" onclick="return false">Proceed</button>
 </form>
 <style type="text/css">
 	#scan{
@@ -75,11 +74,15 @@
 	$('#idnumber').on('input', function() {
     // do something
     	console.log('fadfaf');
-    	var re = new RegExp(/(f201)[1-9]\d\d\d(H)($)/);
+    	var re = new RegExp(/(F20)[0-9][0-9]\d\d\d(H)($)/);
 		var id = document.getElementById('idnumber');
+		len = id.value.length;
+
 		if(re.test(id.value)){
 			document.getElementById("scan").submit();
 			console.log('match');
+		}else if(!re.test(id.value) && len>=9){
+			location.reload();
 		}
 });
 </script>
