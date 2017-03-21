@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:200,300" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+</head>
+<body style="padding-top: 100px;"">
+<h1>Please put your finger on  the scanner for enrollement after the red light on the scanner begins to show up</h1>
+<button id="clicked_always" onclick="execute_on_click()"></button>
+
+<style type="text/css">
+	#scan{
+
+	}
+
+	h1,
+	input,
+	button{
+		font-family: Roboto;
+		font-weight: 200;
+		font-size: 2em;
+		text-align: center;
+
+	}
+	button{
+		display: none;
+	}
+	input{
+		margin:0 auto;
+    	display:block; 
+    	width: 80%;
+    	max-width: 400px;
+	}
+
+</style>
+<script type="text/javascript">
+	
+	//document.createElement("BUTTON");
+	document.getElementById('clicked_always').click();
+	
+	function execute_on_click(){
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "http://localhost:5000/finger", true);
+		xhr.send();
+		console.log('hello');
+	};
+	
+</script>
+
+
+</body>
+</html>
