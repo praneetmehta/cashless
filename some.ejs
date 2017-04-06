@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:200,300" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link  rel="stylesheet" href="/stylesheets/materialize.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+</head>
+
+<body style = "background: rgba(249, 248, 246, 0.58); background-size: cover; background-repeat: none" >
+  <nav class="nav-extended" style="background-color: #fff; ">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo" style="color: black">Cashless</a>
+    </div>
+    <div>
+      <hr style="width: 100%;margin-top: -8px;border: 1px solid rgba(249, 248, 246, 1)">
+    </div>
+    <div class="nav-content">
+      <ul class="tabs tabs-transparent">
+        <% for(var x=0;x<categories.length;x++){%>
+          <% if (x==0){%>
+            <li class="tab"><a class="active" style="color:black" href="#<%= categories[x].category.split(' ').join('')%>_tab"><%= categories[x].category%>s</a></li>
+          <%}else{%>
+            <li class="tab"><a href="#<%= categories[x].category.split(' ').join('')%>_tab" style="color:black"><%= categories[x].category%>s</a></li>
+        <%}}%>
+      </ul>
+    </div>
+  </nav>
+ 
+<% for (var x=0;x<categories.length;x++){%>
+<div id="<%= categories[x].category.split(' ').join('')%>_tab" class="col s12"> 
+    <% if(menu && student_id){%>
+      <ul class="collapsible" data-collapsible="accordion">
+        <%for(var i=0; i<menu.length;i++){%>
+          <%if(menu[i].availability == true && menu[i].food_category == categories[x].category){%>
+            <li>
+              <div class="collapsible-header"><i class="material-icons">reorder</i><%= menu[i].food_name%></div>
+              <div class="collapsible-body">
+                <form id="<%=menu[i].food_id%>_form">
+                  <table>
+                    <thead>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Extra</th>
+                      <th>Packed</th>
+                      <th>ATC</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td><%=menu[i].food_name%></td>
+                          <td><%=menu[i].food_cost%></td>
+                          <td>
+                            <select id="<%=menu[i].food_id%>_quant" onchange='controller(<%=JSON.stringify(menu[i])%>)' >
+                              <option value="0" selected="selected">0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select id="<%=menu[i].food_id%>_extra" multiple>
+                              <%for (var j=0;j<menu[i].extra_toppings.split(',').length;j++){
+                                if(j==0){%>
+                                  <option value="<%=menu[i].extra_toppings.split(',')[j]%>" selected="selected"><%=menu[i].extra_toppings.split(',')[j]%></option>
+                                <%}else{%>
+                                  <option value="<%=menu[i].extra_toppings.split(',')[j]%>"><%=menu[i].extra_toppings.split(',')[j]%></option>
+                                <%}
+                              }%>
+                            </select>
+                          </td>
+                          <td>
+                            <input type="checkbox" id="<%=menu[i].food_id%>_pack">
+                            <label for="<%=menu[i].food_id%>_pack">Yes</label>
+                          </td>
+                          <td>
+                            
+                            <a class="btn-floating waves-effect waves-light red disabled" id="<%=menu[i].food_id%>_atc" onclick="checkInCart(<%=JSON.stringify(menu[i])%>)"><i class="material-icons">shopping_cart</i></a>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </form>
+              </div>
+            </li>
+          <%}%>
+        <%}%>
+      </ul>
+    <%}else{%>
+    <h1>There is some Error. Contact the operator</h1>
+    <%}%> 
+</div>
+<%}%>
+
+<style type="text/css">
+  tr td {
+  max-width: 300px;
+  white-space:normal;
+}
+
+</style>
+
+ 
+
+  <script>
+    $(document).ready(function(){
+      $('.collapsible').collapsible();
+      $('select').material_select();
+    });
+    cart = [];
+    
+    function checkInCart(menuitem){
+      var found = cart.some(function (el) {
+        return el.food_id === menuitem.food_id;
+      });
+      if(found){
+        console.log(found);
+        updateCart(menuitem);
+      }else{
+        console.log(Object.values(cart));
+        addToCart(menuitem);
+      }
+    }
+
+    function updateCart(menuitem){
+      var index;
+      for(var y =0;y<cart.length;y++){
+        if(cart[y].food_id === menuitem.food_id){
+          index = y;
+        }
+      }
+      cart[index].quantity = $('#'+menuitem.food_id+'_quant option:selected').text();
+      if($('#'+menuitem.food_id+'_extra option:selected').text() == ""){
+        cart[index].extra = "None";
+      }else{
+        cart[index].extra = $('#'+menuitem.food_id+'_extra option:selected').text();
+      }
+      cart[index].packed = document.getElementById(menuitem.food_id+'_pack').checked;
+      // console.log(typeof(menuitem));
+      // console.log('cart updated! for '+menuitem.food_id);
+      // console.log('Food Quantity for '+menuitem.food_name+' updated to '+$('#'+menuitem.food_id+'_quant option:selected').text());
+      console.log('updated');
+      console.log(cart);
+    }
+    
+    function addToCart(menuitem){
+      var item = {}
+      item.food_id = menuitem.food_id;
+      item.shop_id = menuitem.shop_id;
+      item.quantity = $('#'+menuitem.food_id+'_quant option:selected').text();
+      if($('#'+menuitem.food_id+'_extra option:selected').text() == ""){
+        item.extra = "None";
+      }else{
+        item.extra = $('#'+menuitem.food_id+'_extra option:selected').text();
+      }
+      item.packed = document.getElementById(menuitem.food_id+'_pack').checked;
+      cart.push(item);
+      console.log(cart);
+
+
+    }
+    function controller(button){
+      if($('#'+button.food_id+'_quant option:selected').text() == 0){
+        $('#'+button.food_id+'_atc').addClass('disabled');
+      }else{
+        $('#'+button.food_id+'_atc').removeClass("disabled");
+      }
+    }
+    
+    
+  </script>
+
+
+</body>
+</html>
